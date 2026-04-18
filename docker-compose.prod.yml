@@ -3,8 +3,8 @@ services:
     image: vllm/vllm-openai:v0.19.0-cu130
     container_name: vllm-gemma
     runtime: nvidia
-    ports:
-      - "${VLLM_PORT:-8000}:8000"
+    expose:
+      - "8000"
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface
     environment:
@@ -18,11 +18,23 @@ services:
               count: ${GPU_COUNT:-1}
               capabilities: [gpu]
     command: >
-      --model ${MODEL_ID:-google/gemma-4-E4B-it}
+      --model ${MODEL_ID:-google/gemma-3-27b-it}
       --tensor-parallel-size ${GPU_COUNT:-1}
-      --max-model-len ${MAX_MODEL_LEN:-16384}
+      --max-model-len ${MAX_MODEL_LEN:-8192}
       --dtype auto
+      --api-key ${VLLM_API_KEY}
       --served-model-name gemma
-      --enforce-eager
-      ${EXTRA_VLLM_ARGS:-}
-    restart: unless-stopped
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: vllm-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - vllm-server
+    restart: always
