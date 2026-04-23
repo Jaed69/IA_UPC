@@ -1,8 +1,7 @@
 services:
   vllm-server:
-    image: vllm/vllm-openai:v0.19.0-cu130
+    image: vllm/vllm-openai:gemma4-cu130
     container_name: vllm-gemma
-    runtime: nvidia
     ports:
       - "${VLLM_PORT:-8000}:8000"
     volumes:
@@ -10,13 +9,8 @@ services:
     environment:
       - HF_TOKEN=${HF_TOKEN}
     ipc: host
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: ${GPU_COUNT:-1}
-              capabilities: [gpu]
+    devices:
+      - nvidia.com/gpu=0
     command: >
       --model ${MODEL_ID:-google/gemma-4-E4B-it}
       --tensor-parallel-size ${GPU_COUNT:-1}
