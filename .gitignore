@@ -1,5 +1,7 @@
 .env
 .env.dev
 .env.large
+.env.ollama
 .cache/
+ollama_data/
 nginx/certs/

@@ -10,13 +10,14 @@ services:
       - HF_TOKEN=${HF_TOKEN}
     ipc: host
     devices:
-      - nvidia.com/gpu=0
+      # CAMBIO: Usamos 'all' para que el driver CDI de NVIDIA en NixOS funcione bien
+      - nvidia.com/gpu=all 
     command: >
-      --model ${MODEL_ID:-google/gemma-4-E4B-it}
+      --model ${MODEL_ID}
       --tensor-parallel-size ${GPU_COUNT:-1}
-      --max-model-len ${MAX_MODEL_LEN:-16384}
+      --max-model-len ${MAX_MODEL_LEN}
       --dtype auto
       --served-model-name gemma
       --enforce-eager
-      ${EXTRA_VLLM_ARGS:-}
+      ${EXTRA_VLLM_ARGS}
     restart: unless-stopped
