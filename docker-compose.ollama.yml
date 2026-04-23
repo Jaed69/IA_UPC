@@ -1,0 +1,12 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ia-upc-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_data:/root/.ollama
+    # REEMPLAZA TODA LA SECCIÓN 'deploy' POR ESTO:
+    devices:
+      - "nvidia.com/gpu=all"
+    restart: always
